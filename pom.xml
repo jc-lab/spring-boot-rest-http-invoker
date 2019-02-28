@@ -5,7 +5,7 @@
 
     <groupId>kr.jclab.spring</groupId>
     <artifactId>spring-boot-rest-http-invoker</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
 
     <name>spring-boot-rest-http-invoker</name>
     <description>RestHttpInvoker</description>
