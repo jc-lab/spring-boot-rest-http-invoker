@@ -6,7 +6,9 @@
 
 고로 JAVA 9 이전에서는 서로 다른 버전의 JVM이거나 사소한 객체의 버전이 다른 경우 정상적으로 동작하지 않습니다.
 
-**spring-boot-rest-http-invoker**는 JavaSerializer 대신에 Jackson ObjectMapper를 사용하여 Restful API로 변환합니다.
+**spring-boot-rest-http-invoker**는 JavaSerializer 대신에 Jackson ObjectMapper를 사용하여 json형식으로 변환합니다.
+
+*(이름은 Rest이지만 사실 Restful하진 않습니다...하하하;;; 최대한 기본틀을 안바꿀려고... 그리고 이름바꾸긴 귄찮아서...)*
 
 RemoteInvocation 형식을 맞춘다면 PHP나 다른 언어에서도 동일하게 접근할 수 있습니다.
 
