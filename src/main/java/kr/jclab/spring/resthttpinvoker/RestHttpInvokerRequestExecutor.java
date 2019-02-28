@@ -1,7 +1,6 @@
 package kr.jclab.spring.resthttpinvoker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jdk.internal.org.objectweb.asm.TypeReference;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.http.MediaType;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
