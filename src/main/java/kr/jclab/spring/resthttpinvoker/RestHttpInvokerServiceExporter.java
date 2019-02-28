@@ -23,7 +23,9 @@ public class RestHttpInvokerServiceExporter extends HttpInvokerServiceExporter {
     protected RemoteInvocation readRemoteInvocation(HttpServletRequest request, InputStream is) throws IOException, ClassNotFoundException {
         MediaType mediaType = MediaType.parseMediaType(request.getContentType());
         if(MediaType.APPLICATION_JSON.isCompatibleWith(mediaType)) {
-            return this.objectMapper.readValue(is, RemoteInvocation.class);
+            JacksonRemoteInvocation jacksonRemoteInvocation = this.objectMapper.readValue(is, JacksonRemoteInvocation.class);
+            jacksonRemoteInvocation.setObjectMapper(objectMapper);
+            return jacksonRemoteInvocation;
         }
         return super.readRemoteInvocation(request, is);
     }

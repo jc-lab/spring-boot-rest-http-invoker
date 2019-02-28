@@ -14,6 +14,33 @@ RemoteInvocation 형식을 맞춘다면 PHP나 다른 언어에서도 동일하�
 
 
 
+github : https://github.com/jc-lab/spring-boot-rest-http-invoker
+
+bintray : https://bintray.com/jc-lab/spring.boot/spring-boot-rest-http-invoker
+
+
+
+Maven
+
+```xml
+<dependency>
+  <groupId>kr.jclab.spring</groupId>
+  <artifactId>spring-boot-rest-http-invoker</artifactId>
+  <version>1.0.0</version>
+  <type>pom</type>
+</dependency>
+```
+
+Gradle
+
+```groovy
+implementation 'kr.jclab.spring:spring-boot-rest-http-invoker:1.0.0'
+```
+
+
+
+
+
 ## 예제 소스
 
 ```java
