@@ -96,7 +96,7 @@ public interface TestService {
     void test_2(int a);
     void test_3(String b);
     void test_4(Map<String, String> c);
-    int test_5(int a, int b);
+    int test_5(long a, long b);
 }
 ```
 
