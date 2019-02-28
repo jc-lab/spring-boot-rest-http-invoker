@@ -96,7 +96,7 @@ public interface TestService {
     void test_2(int a);
     void test_3(String b);
     void test_4(Map<String, String> c);
-    int test_5(int a, int b);
+    int test_5(long a, long b);
 }
 ```
 
@@ -249,7 +249,7 @@ Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
 Connection: keep-alive
 Content-Length: 92
 
-{"methodName":"test_5","parameterTypes":["int","int"],"arguments":[22,55],"attributes":null}
+{"methodName":"test_5","parameterTypes":["long","long"],"arguments":[22,55],"attributes":null}
 ```
 
 ```http
