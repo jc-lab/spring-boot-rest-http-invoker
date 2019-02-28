@@ -8,9 +8,13 @@
 
 **spring-boot-rest-http-invoker**는 JavaSerializer 대신에 Jackson ObjectMapper를 사용하여 json형식으로 변환합니다.
 
-*(이름은 Rest이지만 사실 Restful하진 않습니다...하하하;;; 최대한 기본틀을 안바꿀려고... 그리고 이름바꾸긴 귄찮아서...)*
+*(이름은 Rest이지만 사실 Restful하진 않습니다...하하하;;; 최대한 기본틀을 안바꿀려고... 그리고 이름바꾸긴 귀찮아서...)*
 
 RemoteInvocation 형식을 맞춘다면 PHP나 다른 언어에서도 동일하게 접근할 수 있습니다.
+
+* [PHP구현](https://github.com/jc-lab/php-rest-http-invoker)
+
+
 
 프로토콜 형식에 대해서는 아래를 참고해 주세요.
 
