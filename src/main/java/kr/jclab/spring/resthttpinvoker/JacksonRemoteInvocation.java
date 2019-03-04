@@ -37,6 +37,11 @@ public class JacksonRemoteInvocation extends RemoteInvocation {
         this.methodInvocationHolder = new MethodInvocationHolder(methodInvocation.getMethod().getName(), methodInvocation.getMethod(), methodInvocation.getMethod().getParameterTypes(), methodInvocation.getArguments());
     }
 
+    public JacksonRemoteInvocation(MethodInvocationHolder methodInvocationHolder) {
+        super(methodInvocationHolder.methodName, methodInvocationHolder.parameterTypes, methodInvocationHolder.arguments);
+        this.methodInvocationHolder = methodInvocationHolder;
+    }
+
     public JacksonRemoteInvocation(String methodName, Class<?>[] parameterTypes, Object[] arguments) {
         super(methodName, parameterTypes, arguments);
         this.methodInvocationHolder = new MethodInvocationHolder(methodName, null, parameterTypes, arguments);

@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RestHttpInvokerServiceExporter extends HttpInvokerServiceExporter {
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -23,7 +26,8 @@ public class RestHttpInvokerServiceExporter extends HttpInvokerServiceExporter {
     protected RemoteInvocation readRemoteInvocation(HttpServletRequest request, InputStream is) throws IOException, ClassNotFoundException {
         MediaType mediaType = MediaType.parseMediaType(request.getContentType());
         if(MediaType.APPLICATION_JSON.isCompatibleWith(mediaType)) {
-            JacksonRemoteInvocation jacksonRemoteInvocation = this.objectMapper.readValue(is, JacksonRemoteInvocation.class);
+            JacksonRemoteInvocationHolder holder = this.objectMapper.readValue(is, JacksonRemoteInvocationHolder.class);
+            JacksonRemoteInvocation jacksonRemoteInvocation = new JacksonRemoteInvocation(holder.parse(this.objectMapper, getServiceInterface()));
             jacksonRemoteInvocation.setObjectMapper(objectMapper);
             return jacksonRemoteInvocation;
         }
@@ -32,7 +36,16 @@ public class RestHttpInvokerServiceExporter extends HttpInvokerServiceExporter {
 
     @Override
     protected void writeRemoteInvocationResult(HttpServletRequest request, HttpServletResponse response, RemoteInvocationResult result, OutputStream os) throws IOException {
+        Map<String, Object> resultPack = new HashMap<>();
+        if(result.getValue() == null)
+            resultPack.put("value", null);
+        else
+            resultPack.put("value", Arrays.asList(result.getValue().getClass().getName(), result.getValue()));
+        if(result.getException() == null)
+            resultPack.put("exception", null);
+        else
+            resultPack.put("exception", Arrays.asList(result.getException().getClass().getName(), result.getException()));
         response.setContentType(MediaType.APPLICATION_JSON.toString());
-        this.objectMapper.writeValue(response.getOutputStream(), result);
+        this.objectMapper.writeValue(response.getOutputStream(), resultPack);
     }
 }

@@ -15,7 +15,8 @@ import java.net.HttpURLConnection;
 import java.util.Map;
 
 public class RestHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExecutor {
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper()
+            .enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
 
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -33,8 +34,6 @@ public class RestHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExec
         super.prepareConnection(connection, contentLength);
         connection.setRequestProperty(HTTP_HEADER_CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
     }
-
-
 
     public RemoteInvocationResult jacksonExecuteRequest(HttpInvokerClientConfiguration config, RemoteInvocation invocation, MethodInvocation originalInvocation) throws IOException {
         HttpURLConnection con = openConnection(config);
