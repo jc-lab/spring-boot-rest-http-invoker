@@ -87,9 +87,11 @@ public class JacksonRemoteInvocation extends RemoteInvocation {
         for(int i=0, count = realArguments.length; i < count; i++) {
             Object value = this.methodInvocationHolder.arguments[i];
             Class<?> parameterType = methodParameterTypes[i];
-            if(!parameterType.isAssignableFrom(value.getClass())) {
-                if(value instanceof Map) {
-                    value = this.objectMapper.convertValue(value, parameterType);
+            if(value != null) {
+                if (!parameterType.isAssignableFrom(value.getClass())) {
+                    if (value instanceof Map) {
+                        value = this.objectMapper.convertValue(value, parameterType);
+                    }
                 }
             }
             realArguments[i] = value;
