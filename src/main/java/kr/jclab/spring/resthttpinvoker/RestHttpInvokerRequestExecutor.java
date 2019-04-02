@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.List;
 import java.util.Map;
 
 public class RestHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExecutor {
@@ -44,11 +45,20 @@ public class RestHttpInvokerRequestExecutor extends SimpleHttpInvokerRequestExec
         InputStream responseBody = readResponseBody(config, con);
         if(originalInvocation != null) {
             Map<String, Object> result = this.objectMapper.readValue(responseBody, Map.class);
-            Object value = result.get("value");
+            List value = (List)result.get("value");
             RemoteInvocationResult remoteInvocationResult = new RemoteInvocationResult();
             remoteInvocationResult.setException((Throwable)result.get("exception"));
-            if(value != null)
-                remoteInvocationResult.setValue(this.objectMapper.convertValue(value, originalInvocation.getMethod().getReturnType()));
+            if(value != null) {
+                Class returnTypeClazz = null;
+                if(value.get(0) != null) {
+                    try {
+                        returnTypeClazz = Class.forName((String)value.get(0));
+                    } catch (ClassNotFoundException e) {
+                        returnTypeClazz = originalInvocation.getMethod().getReturnType();
+                    }
+                }
+                remoteInvocationResult.setValue(this.objectMapper.convertValue(value.get(1), returnTypeClazz));
+            }
             return remoteInvocationResult;
         }else{
             return this.objectMapper.readValue(responseBody, RemoteInvocationResult.class);
