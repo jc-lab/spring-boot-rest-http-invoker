@@ -5,7 +5,7 @@
 
     <groupId>kr.jclab.spring</groupId>
     <artifactId>spring-boot-rest-http-invoker</artifactId>
-    <version>1.1.4</version>
+    <version>1.1.6</version>
 
     <name>spring-boot-rest-http-invoker</name>
     <description>RestHttpInvoker</description>
@@ -130,6 +130,19 @@
             <version>2.1.0.RELEASE</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.8</version>
+        </dependency>
+
     </dependencies>
 
 </project>

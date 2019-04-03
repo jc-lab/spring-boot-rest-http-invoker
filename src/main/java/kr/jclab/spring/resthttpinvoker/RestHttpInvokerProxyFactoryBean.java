@@ -2,6 +2,7 @@ package kr.jclab.spring.resthttpinvoker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.http.client.HttpClient;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
@@ -13,6 +14,10 @@ public class RestHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBean
     public RestHttpInvokerProxyFactoryBean() {
         super();
         setHttpInvokerRequestExecutor(executor);
+    }
+
+    public void setHttpClient(HttpClient httpClient) {
+        executor.setHttpClient(httpClient);
     }
 
     public void setObjectMapper(ObjectMapper objectMapper) {
@@ -30,5 +35,8 @@ public class RestHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBean
         return this.executeRequest(invocation, null);
     }
 
+    public void setHttpClientRequestCustomizer(HttpClientRequestCustomizer httpClientRequestCustomizer) {
+        executor.setHttpClientRequestCustomizer(httpClientRequestCustomizer);
+    }
 
 }
