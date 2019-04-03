@@ -57,6 +57,16 @@ public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecuto
         return null;
     }
 
+    protected void validateResponse(HttpInvokerClientConfiguration config, ClientHttpResponse clientHttpResponse)
+            throws IOException {
+
+        if (clientHttpResponse.getRawStatusCode() >= 300) {
+            throw new IOException(
+                    "Did not receive successful HTTP response: status code = " + clientHttpResponse.getRawStatusCode() +
+                            ", status message = [" + clientHttpResponse.getStatusText() + "]");
+        }
+    }
+
     public RemoteInvocationResult jacksonExecuteRequest(HttpInvokerClientConfiguration config, RemoteInvocation invocation, MethodInvocation originalInvocation) throws IOException {
         ClientHttpRequest clientHttpRequest;
         try {
@@ -65,7 +75,11 @@ public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecuto
             throw new RuntimeException(e);
         }
         new StringHttpMessageConverter().write(this.objectMapper.writeValueAsString(invocation), MediaType.APPLICATION_JSON_UTF8, clientHttpRequest);
+
         ClientHttpResponse clientHttpResponse = clientHttpRequest.execute();
+
+        validateResponse(config, clientHttpResponse);
+
         InputStream responseBody = clientHttpResponse.getBody();
         if(originalInvocation != null) {
             Map<String, Object> result = this.objectMapper.readValue(responseBody, Map.class);
