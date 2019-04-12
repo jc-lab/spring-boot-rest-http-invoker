@@ -1,6 +1,7 @@
 package kr.jclab.spring.resthttpinvoker;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.remoting.support.RemoteInvocation;
@@ -8,6 +9,10 @@ import org.springframework.remoting.support.RemoteInvocation;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class JacksonRemoteInvocation extends RemoteInvocation {
@@ -31,25 +36,13 @@ public class JacksonRemoteInvocation extends RemoteInvocation {
     private ObjectMapper objectMapper = null;
     @JsonIgnore
     private MethodInvocationHolder methodInvocationHolder;
+    @JsonIgnore
+    private Map<String, TypeReference[]> methodTypeMap;
 
-    public JacksonRemoteInvocation(MethodInvocation methodInvocation) {
-        super(methodInvocation);
-        this.methodInvocationHolder = new MethodInvocationHolder(methodInvocation.getMethod().getName(), methodInvocation.getMethod(), methodInvocation.getMethod().getParameterTypes(), methodInvocation.getArguments());
-    }
-
-    public JacksonRemoteInvocation(MethodInvocationHolder methodInvocationHolder) {
+    public JacksonRemoteInvocation(MethodInvocationHolder methodInvocationHolder, Map<String, TypeReference[]> methodTypeMap) {
         super(methodInvocationHolder.methodName, methodInvocationHolder.parameterTypes, methodInvocationHolder.arguments);
         this.methodInvocationHolder = methodInvocationHolder;
-    }
-
-    public JacksonRemoteInvocation(String methodName, Class<?>[] parameterTypes, Object[] arguments) {
-        super(methodName, parameterTypes, arguments);
-        this.methodInvocationHolder = new MethodInvocationHolder(methodName, null, parameterTypes, arguments);
-    }
-
-    public JacksonRemoteInvocation() {
-        super();
-        this.methodInvocationHolder = new MethodInvocationHolder();
+        this.methodTypeMap = methodTypeMap;
     }
 
     public void setObjectMapper(ObjectMapper objectMapper) {
@@ -82,20 +75,34 @@ public class JacksonRemoteInvocation extends RemoteInvocation {
     @Override
     public Object invoke(Object targetObject) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Method method = targetObject.getClass().getMethod(this.methodInvocationHolder.methodName, this.methodInvocationHolder.parameterTypes);
-        Class<?>[] methodParameterTypes = method.getParameterTypes();
+        Parameter[] parameters = method.getParameters();
         Object[] realArguments = new Object[this.methodInvocationHolder.arguments.length];
+        TypeReference[] typeReferences = this.methodTypeMap.get(method.getName());
         for(int i=0, count = realArguments.length; i < count; i++) {
+            Parameter parameter = parameters[i];
             Object value = this.methodInvocationHolder.arguments[i];
-            Class<?> parameterType = methodParameterTypes[i];
             if(value != null) {
-                if (!parameterType.isAssignableFrom(value.getClass())) {
-                    if (value instanceof Map) {
-                        value = this.objectMapper.convertValue(value, parameterType);
-                    }
+                if(typeReferences != null) {
+                    value = this.objectMapper.convertValue(value, typeReferences[i]);
+                }else if((value instanceof Map) && (!parameter.getType().isAssignableFrom(value.getClass()))) {
+                    value = this.objectMapper.convertValue(value, parameter.getType());
                 }
             }
             realArguments[i] = value;
         }
         return method.invoke(targetObject, realArguments);
+    }
+
+    public abstract class DynamicTypeReference<T> extends TypeReference
+    {
+        protected final Type _realType;
+
+        public DynamicTypeReference(Type[] typeList)
+        {
+            _realType = typeList[0];
+        }
+
+        @Override
+        public Type getType() { return _realType; }
     }
 }
