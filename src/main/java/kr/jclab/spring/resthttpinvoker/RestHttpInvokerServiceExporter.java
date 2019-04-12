@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
-import resthttpinvoker.exception.NotAutoInvokableMethod;
+import kr.jclab.spring.resthttpinvoker.exception.NotAutoInvokableMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
