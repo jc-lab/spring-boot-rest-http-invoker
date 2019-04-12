@@ -26,6 +26,12 @@ public class RestHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactoryBean
     }
 
     @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        super.setBeanClassLoader(classLoader);
+        executor.setBeanClassLoader(classLoader);
+    }
+
+    @Override
     protected RemoteInvocationResult executeRequest(RemoteInvocation invocation, MethodInvocation originalInvocation) throws Exception {
         return executor.jacksonExecuteRequest(this, invocation, originalInvocation);
     }
