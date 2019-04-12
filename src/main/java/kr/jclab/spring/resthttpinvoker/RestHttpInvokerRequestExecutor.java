@@ -84,6 +84,7 @@ public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecuto
         if(originalInvocation != null) {
             Map<String, Object> result = this.objectMapper.readValue(responseBody, Map.class);
             List value = (List)result.get("value");
+            List exception = (List)result.get("exception");
             RemoteInvocationResult remoteInvocationResult = new RemoteInvocationResult();
             remoteInvocationResult.setException((Throwable)result.get("exception"));
             if(value != null) {
@@ -96,6 +97,17 @@ public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecuto
                     }
                 }
                 remoteInvocationResult.setValue(this.objectMapper.convertValue(value.get(1), returnTypeClazz));
+            }
+            if(exception != null) {
+                Class<Throwable> returnTypeClazz = null;
+                if(exception.get(0) != null) {
+                    try {
+                        returnTypeClazz = (Class<Throwable>)Class.forName((String)exception.get(0));
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                remoteInvocationResult.setException(this.objectMapper.convertValue(exception.get(1), returnTypeClazz));
             }
             return remoteInvocationResult;
         }else{
