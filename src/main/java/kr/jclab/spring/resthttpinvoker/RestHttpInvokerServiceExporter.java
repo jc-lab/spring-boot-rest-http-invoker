@@ -2,6 +2,7 @@ package kr.jclab.spring.resthttpinvoker;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.jclab.spring.resthttpinvoker.vo.RemoteExceptionData;
 import org.springframework.http.MediaType;
 import org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter;
 import org.springframework.remoting.support.RemoteInvocation;
@@ -48,8 +49,10 @@ public class RestHttpInvokerServiceExporter extends HttpInvokerServiceExporter {
             resultPack.put("value", Arrays.asList(result.getValue().getClass().getName(), result.getValue()));
         if(result.getException() == null)
             resultPack.put("exception", null);
-        else
-            resultPack.put("exception", Arrays.asList(result.getException().getClass().getName(), result.getException()));
+        else {
+            RemoteExceptionData remoteExceptionData = new RemoteExceptionData((result.getException() instanceof InvocationTargetException) ? result.getException().getCause() : result.getException());
+            resultPack.put("exception", remoteExceptionData);
+        }
         response.setContentType(MediaType.APPLICATION_JSON.toString());
         this.objectMapper.writeValue(response.getOutputStream(), resultPack);
     }

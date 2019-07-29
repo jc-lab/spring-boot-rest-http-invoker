@@ -1,6 +1,8 @@
 package kr.jclab.spring.resthttpinvoker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.jclab.spring.resthttpinvoker.exception.RemoteException;
+import kr.jclab.spring.resthttpinvoker.vo.RemoteExceptionData;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -26,8 +28,7 @@ import java.util.Map;
 public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecutor {
     private final HttpComponentsClientHttpRequestFactory httpRequestFactory = new MyHttpComponentsClientHttpRequestFactory();
     private HttpClientRequestCustomizer httpClientRequestCustomizer = null;
-    private ObjectMapper objectMapper = new ObjectMapper()
-            .enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
@@ -91,8 +92,8 @@ public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecuto
         if(originalInvocation != null) {
             Map<String, Object> result = this.objectMapper.readValue(responseBody, Map.class);
             List value = (List)result.get("value");
-            List exception = (List)result.get("exception");
-            RemoteInvocationResult remoteInvocationResult = new RemoteInvocationResult();
+            Object exception = result.get("exception");
+            RemoteInvocationResult remoteInvocationResult = new RestHttpRemoteInvocationResult();
             if(value != null) {
                 Class returnTypeClazz = null;
                 if(value.get(0) != null) {
@@ -105,15 +106,8 @@ public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecuto
                 remoteInvocationResult.setValue(this.objectMapper.convertValue(value.get(1), returnTypeClazz));
             }
             if(exception != null) {
-                Class<Throwable> returnTypeClazz = null;
-                if(exception.get(0) != null) {
-                    try {
-                        returnTypeClazz = (Class<Throwable>)this.beanClassLoader.loadClass((String)exception.get(0));
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                remoteInvocationResult.setException(this.objectMapper.convertValue(exception.get(1), returnTypeClazz));
+                RemoteExceptionData remoteExceptionData = this.objectMapper.convertValue(exception, RemoteExceptionData.class);
+                remoteInvocationResult.setException(RemoteException.create(remoteExceptionData));
             }
             return remoteInvocationResult;
         }else{
