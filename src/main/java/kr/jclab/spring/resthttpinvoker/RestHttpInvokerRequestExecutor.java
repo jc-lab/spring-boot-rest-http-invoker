@@ -92,7 +92,8 @@ public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecuto
         if(originalInvocation != null) {
             Map<String, Object> result = this.objectMapper.readValue(responseBody, Map.class);
             List value = (List)result.get("value");
-            Object exception = result.get("exception");
+            Object exceptionRed = result.get("exception_red");
+            Map exceptionOrig = (Map)result.get("exception_orig");
             RemoteInvocationResult remoteInvocationResult = new RestHttpRemoteInvocationResult();
             if(value != null) {
                 Class returnTypeClazz = null;
@@ -105,9 +106,20 @@ public class RestHttpInvokerRequestExecutor implements HttpInvokerRequestExecuto
                 }
                 remoteInvocationResult.setValue(this.objectMapper.convertValue(value.get(1), returnTypeClazz));
             }
-            if(exception != null) {
-                RemoteExceptionData remoteExceptionData = this.objectMapper.convertValue(exception, RemoteExceptionData.class);
+            if(exceptionRed != null) {
+                RemoteExceptionData remoteExceptionData = this.objectMapper.convertValue(exceptionRed, RemoteExceptionData.class);
                 remoteInvocationResult.setException(RemoteException.create(remoteExceptionData));
+            }else
+            if(exceptionOrig != null) {
+                String className = (String)exceptionOrig.get("@class");
+                Class<Throwable> exceptionClazz;
+                exceptionOrig.remove("@class");
+                try {
+                    exceptionClazz = (Class<Throwable>)beanClassLoader.loadClass(className);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+                remoteInvocationResult.setException(this.objectMapper.convertValue(exceptionOrig, exceptionClazz));
             }
             return remoteInvocationResult;
         }else{
