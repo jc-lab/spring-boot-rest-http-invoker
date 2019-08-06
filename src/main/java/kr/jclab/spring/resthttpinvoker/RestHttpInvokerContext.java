@@ -16,7 +16,7 @@ public class RestHttpInvokerContext {
         return request;
     }
 
-    public HttpServletResponse getResponse() {
+    public HttpServletResponse getHttpServletResponse() {
         return response;
     }
 
