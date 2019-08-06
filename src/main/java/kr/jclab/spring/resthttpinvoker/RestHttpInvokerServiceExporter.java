@@ -9,6 +9,7 @@ import org.springframework.remoting.support.RemoteInvocation;
 import org.springframework.remoting.support.RemoteInvocationResult;
 import kr.jclab.spring.resthttpinvoker.exception.NotAutoInvokableMethod;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,6 +26,13 @@ public class RestHttpInvokerServiceExporter extends HttpInvokerServiceExporter {
 
     public void setObjectMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        RestHttpInvokerContextHolder.setContext(new RestHttpInvokerContext(request, response));
+        super.handleRequest(request, response);
+        RestHttpInvokerContextHolder.removeContext();
     }
 
     @Override
